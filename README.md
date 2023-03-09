@@ -96,5 +96,5 @@ e1 : t1
 e2 : t2
 ---------
 (e1 a e2) : Nat
-(e1 b e2) : Bool
+(e1 b e2) : Bool 
 ~~~
