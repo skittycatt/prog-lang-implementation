@@ -36,8 +36,8 @@ const operatorMap: Map<string, OpEntry> =
 export function evaluate (e: L.Exp, viro: L.Env): L.Value {
   switch (e.tag) {
     case 'var': {
-      if (viro.has(e.value)) { // @ts-ignore
-        return viro.get(e.value)
+      if (viro.has(e.value)) {
+        return viro.get(e.value)!
       } else {
         throw new Error(`Variable error: No defined value for ${e.value}`)
       }
@@ -124,7 +124,7 @@ export function execute(env: L.Env, prog: L.Prog): Output {
     if (e.tag === 'define') {
       env = L.extendEnv(e.id, evaluate(e.exp, env), env)
     } else if (e.tag === 'print') {
-      let printed: L.Value = evaluate(e.exp, env)
+      const printed: L.Value = evaluate(e.exp, env)
       stringouts.push(String(printed.value))
     } else {
       throw new Error(`This is not a statement dumdum`)

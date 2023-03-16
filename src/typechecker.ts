@@ -7,10 +7,19 @@ function expectedTypeMsg(expected: string, pos: number, fn: string, found: strin
 /** @return the type of expression `e` */
 export function typecheck (ctx: L.Ctx, e: L.Exp): L.Typ {
   switch (e.tag) {
+    case 'lambda': {
+      ctx = L.extendCtx(e.value, e.t, ctx)
+      const t1 = typecheck(ctx, e.e1)
+      return t1
+    }
     case 'var':
-      throw new Error('TODO: implement typecheck(var)!')
+      if (ctx.has(e.value)) {
+        return ctx.get(e.value)!
+      } else {
+        throw new Error(`variable ${e.value} is not in context map.`)
+      }
     case 'num':
-      return L.tynat
+      return e.numtype
     case 'bool':
       return L.tybool
     case 'not': {

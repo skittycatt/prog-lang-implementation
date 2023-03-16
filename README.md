@@ -75,26 +75,116 @@ Notably, if this project is run in a local version of Visual Studio Code, we rec
 
 I want to write a language where you can replace operator symbols with words instead. It is an esoteric language that will have no real purpose for being used instead of other languages, serving the sole purpose of helping me learn how to write a compiler. The language will be based on a mixture of C and Scheme style syntax, with operators in between their arguments, and required parentheses. It also coerces Booleans into 0 or 1 if a number operator is used, and coerces numbers into Booleans in Boolean operations (where n > 0 is `true`, and n <= 0 is `false`)
 
-Tentative language specs:
+Current language specs:
 
-~~~
-t ::= Nat | Bool
+### Syntax
 
-a ::= + | plus | - | minus | * | multiply | / | divide
+```
+x, f are identifiers; n is a number; b is a boolean; s is a string
 
-b ::= and | && | or | ||
+t ::= Nat | Float | Bool | Arr | String
 
-e ::= n | b | (e1 a e2) | (e1 b e2)
+e ::= x | n | b | "s"
+    | (lambda (x t) e)
+    | (not e)
+    | (+ e1 e2)
+    | (= e1 e2)
+    | (and e1 e2)
+    | (or e1 e2)
+    | (if e1 e2 e3)
+    | (e1 e2)
 
-----------
-n : Nat
+v ::= n | b | "s" | (lambda (x t) e)
 
-----------
-b : Bool
+s ::= (print e) (define x e)
 
-e1 : t1
-e2 : t2
+prog ::= s1 ... sk
+```
+
+### Dynamic Semantics
+
+```
+σ is the runtime environment
+
+x:v ∈ σ
 ---------
-(e1 a e2) : Nat
-(e1 b e2) : Bool 
-~~~
+σ; x ⇓ v
+
+σ; e1 ⇓ true    σ; e2 ⇓ v
+-----------------
+σ; (if e1 e2 e3) ⇓ v
+
+σ; e1 ⇓ false   σ; e3 ⇓ v
+-----------------
+σ; (if e1 e2 e3) ⇓ v
+
+σ; e1 ⇓ (lambda (x t) e)
+σ; e2 ⇓ v
+σ; [v/x] e ⇓ v'
+---------------------
+σ; (e1 e2) ⇓ v'
+```
+
+### Typechecking
+
+```
+Γ is the typechecking context
+
+x:t ∈ Γ
+---------
+Γ ⊢ x : t
+
+----------
+Γ ⊢ n : Nat | Float
+
+----------
+Γ ⊢ b : Bool
+
+----------
+Γ ⊢ "s": String
+
+x:t1, Γ ⊢ e : t2
+-------------------
+Γ ⊢ (lambda (x t1) e) : (-> t1 t2)
+
+Γ ⊢ e : Bool
+--------------
+Γ ⊢ (not e) : Bool
+
+Γ ⊢ e1 : Nat
+Γ ⊢ e2 : Nat
+---------------
+Γ ⊢ (+ e1 e2) : Nat
+
+Γ ⊢ e1 : Nat | Float
+Γ ⊢ e2 : Nat | Float
+--------------
+Γ ⊢ (+ e1 e2) : Float
+
+Γ ⊢ e1 : t1
+Γ ⊢ e2 : t2
+---------------
+Γ ⊢ (= e1 e2) : Bool
+
+Γ ⊢ e1 : Bool
+Γ ⊢ e2 : Bool
+---------------
+Γ ⊢ (and e1 e2) : Bool
+
+Γ ⊢ e1 : Bool
+Γ ⊢ e2 : Bool
+----------------
+Γ ⊢ (or e1 e2) : Bool
+
+Γ ⊢ e1 : Bool
+Γ ⊢ e2 : t
+Γ ⊢ e3 : t
+----------------
+Γ ⊢ (if e1 e2 e3) : t
+
+Γ ⊢ e1 : (-> t1 t2)
+Γ ⊢ e2 : t1
+------------
+Γ ⊢ (e1 e2) : t2
+
+```

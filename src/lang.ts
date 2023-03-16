@@ -17,7 +17,7 @@ export const tyarr = (t1: Typ, t2: Typ): Typ => ({ tag: 'arr', t1, t2 })
 export type TyStr = { tag: 'string' }
 export const tystr: Typ = ({ tag: 'string' })
 
-export type Typ = TyNat | TyBool | TyArr | TyFloat | TyStr
+export type Typ = TyNat | TyBool | TyArr | TyFloat | TyStr 
 
 // Expressions
 
@@ -54,7 +54,7 @@ export const ife = (e1: Exp, e2: Exp, e3: Exp): Exp =>
 
 export type SLambda = { tag: 'lambda', value: string, t: Typ, e1: Exp }
 export const slambda = (value: string, t: Typ, e1: Exp): SLambda => 
-({ tag: 'lambda', value, t, e1 })
+  ({ tag: 'lambda', value, t, e1 })
 
 export type App = { tag: 'app', e1: Exp, e2: Exp }
 export const app = (e1: Exp, e2: Exp): Exp => ({ tag: 'app', e1, e2 })
