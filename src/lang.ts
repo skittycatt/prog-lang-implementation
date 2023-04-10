@@ -1,5 +1,4 @@
 /* eslint-disable spaced-comment */
-// TODO: Add float and string types
 
 /***** Abstract Syntax Tree ***************************************************/
 
@@ -226,6 +225,8 @@ export function typEquals (t1: Typ, t2: Typ): boolean {
   if (t1.tag === 'nat' && t2.tag === 'nat') {
     return true
   } else if (t1.tag === 'bool' && t2.tag === 'bool') {
+    return true
+  } else if (t1.tag === 'float' && t2.tag === 'float') {
     return true
   } else if (t1.tag === 'arr' && t2.tag === 'arr') {
     return typEquals(t1.output, t2.output) &&
