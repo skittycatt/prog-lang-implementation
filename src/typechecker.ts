@@ -15,9 +15,8 @@ export function typecheck (ctx: L.Ctx, e: L.Exp): L.Typ {
         throw new Error(`Type error: unbound variable: ${e.value}`)
       }
     }
-    case 'num': return e.value % 1 === 0 ? L.tynat : L.tyflo
+    case 'num': return L.tynum
     case 'bool': return L.tybool
-    case 'string': return L.tystr
     case 'lam': {
       const outTy = typecheck(L.extendCtx(e.param, e.typ, ctx), e.body)
       return L.tyarr([e.typ], outTy)
@@ -49,24 +48,7 @@ export function typecheck (ctx: L.Ctx, e: L.Exp): L.Typ {
       }
       return t3
     }
-    case 'rec': {
-      const records = new Map<string, L.Typ>()
-      for (const [str, val] of e.inputs) {
-        const t1 = typecheck(ctx, val)
-        records.set(str, t1)
-      }
-      return L.tyrec(records)
-    }
-    case 'field': {
-      const t1 = typecheck(ctx, e.e1)
-      if (t1.tag === 'rec') {
-        const f = t1.inputs.get(e.e2)
-        if (f !== undefined) {
-          return f
-        } else throw new Error(`Type Error: ${e.e2} does not exist in ${t1}`)
-      } else throw new Error(expectedTypeMsg('rec', 1, 'field', t1.tag))
-    }
-    default: throw new Error('scream')
+    default: throw new Error('Not fully implemented yet: see README.md')
   }
 }
 

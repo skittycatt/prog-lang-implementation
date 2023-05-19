@@ -1,28 +1,36 @@
-Current language plan: Keep S-expression style syntax. Adding classes, static typing, and (???).
+
+Language implemented: S-expression syntax with heap allocation of pointers. All pointers and variables are mutable. Pointers allow for arithmetic on their stored index; as long as the pointer to be passed back is within bounds. Pointers save their bounds on instantiation using an optional size argument (default is 1). Any pointers created using pointer arithmetic inherit the bounds of the original pointer to avoid unintentionally accessing memory outside the allocated space.
+
+Usage: Any of the expressions in the Syntax section below are considered valid inputs. The test.ts file in the test folder contains functions for running expressions given a string and can be used as a basis for forming more complex usages, including providing a non-empty environment or store.
+
+To run the program:
+
+`test.ts` contains sample functions for running an evaluation on a single expression, or executing a set of statements.
 
 Current language specs:
 
 ### Syntax
 
 ```
-x, f are identifiers; n is a number; b is a boolean; s is a string
+x is an identifier; n is a number; b is a boolean; k is a keyword
 
-t ::= Nat | Float | Bool | Str | (-> t1 t2) | (Rec f1 t1 ... fk tk)
+t ::= Num | Bool | Str | (-> t1 t2) | Pointer | Keyword
 
-e ::= x | n | b | "s"
-    | (lambda (x t) e)
+e ::= x | n | b 
+    | (lambda x t e)
     | (not e)
     | (+ e1 e2) | (- e1 e2) | (/ e1 e2) | (* e1 e2)
     | (= e1 e2)
     | (and e1 e2) | (or e1 e2)
     | (if e1 e2 e3)
     | (e1 e2)
-    | (rec f1 e1 ... fk ek)
-    | (field e f)
+    | (new k)
+    | (new k n)
+    | (deref x)
 
-v ::= n | b | "s" | (lambda (x t) e) | (rec f1 v1 ... fk vk)
+v ::= n | b | (lambda (x t) e) | p | k | undef
 
-s ::= (print e) (define x e)
+s ::= (print e) | (assign x e) | (define x e)
 
 prog ::= s1 ... sk
 ```
@@ -50,14 +58,10 @@ x:v ∈ σ
 ---------------------
 σ; (e1 e2) ⇓ v'
 
-σ; e ⇓ (rec f1 v1 ... f v ... fk vk)
----------------------
-σ; (field e f) ⇓ v
-
-
 ```
 
 ### Typechecking
+(The language doesn't really support typechecking at this point but I thought keeping the syntax of typing here was important)
 
 ```
 Γ is the typechecking context
@@ -67,13 +71,10 @@ x:t ∈ Γ
 Γ ⊢ x : t
 
 ----------
-Γ ⊢ n : Nat | Float
+Γ ⊢ n : Num
 
 ----------
 Γ ⊢ b : Bool
-
-----------
-Γ ⊢ "s": String
 
 x:t1, Γ ⊢ e : t2
 -------------------
@@ -83,15 +84,10 @@ x:t1, Γ ⊢ e : t2
 --------------
 Γ ⊢ (not e) : Bool
 
-Γ ⊢ e1 : Nat
-Γ ⊢ e2 : Nat
+Γ ⊢ e1 : Num
+Γ ⊢ e2 : Num
 ---------------
-Γ ⊢ (+ e1 e2) : Nat
-
-Γ ⊢ e1 : Nat | Float
-Γ ⊢ e2 : Nat | Float
---------------
-Γ ⊢ (+ e1 e2) : Float
+Γ ⊢ (+ e1 e2) : Num
 
 Γ ⊢ e1 : t1
 Γ ⊢ e2 : t2
@@ -119,12 +115,17 @@ x:t1, Γ ⊢ e : t2
 ------------
 Γ ⊢ (e1 e2) : t2
 
-Γ ⊢ ek : tk
-------------------
-Γ ⊢ (rec f1 e1 ... fk ek) : (Rec f1 t1 ... fk tk)
+Γ ⊢ k : Keyword
+---------------
+Γ ⊢ (new k) : Pointer
 
-Γ ⊢ e : (Rec f1 t1 ... f t ... fk tk)
--------------------------
-Γ ⊢ (field e f) : t
+Γ ⊢ x : Var
+----------------
+Γ ⊢ (deref x) : t
 
 ```
+
+### Default Keyword Pointer Values
+
+Num: 0
+Bool: false

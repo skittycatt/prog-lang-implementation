@@ -68,9 +68,13 @@ export function makeInitialEnv (): L.Env {
 }
 
 export const initialCtx: L.Ctx = new Map([
-  ['+', L.tyarr([L.tynat, L.tynat], L.tynat)],
-  ['-', L.tyarr([L.tynat, L.tynat], L.tynat)],
-  ['*', L.tyarr([L.tynat, L.tynat], L.tynat)],
-  ['/', L.tyarr([L.tynat, L.tynat], L.tynat)],
-  ['zero?', L.tyarr([L.tynat], L.tybool)]
+  ['+', L.tyarr([L.tynum, L.tynum], L.tynum)],
+  ['-', L.tyarr([L.tynum, L.tynum], L.tynum)],
+  ['*', L.tyarr([L.tynum, L.tynum], L.tynum)],
+  ['/', L.tyarr([L.tynum, L.tynum], L.tynum)],
+  ['zero?', L.tyarr([L.tynum], L.tybool)]
 ])
+
+export function initialStore (): L.Value[] { 
+  return Array(10).fill(L.undef)
+}
